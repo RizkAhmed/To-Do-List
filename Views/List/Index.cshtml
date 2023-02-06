@@ -1,0 +1,157 @@
+﻿@model ToDoListProject.Models.User
+@{
+    ViewData["Title"] = "Index";
+}
+
+@{ 
+    // this function is return color for " .card-header "that determined the task is not completed before end date
+    string dateStat(string? endDate,bool complete)
+    {
+        if (endDate == null)
+            return "#f5ff87";
+        return  (DateTime.Now.Date >
+                 DateTime.ParseExact(endDate, "yyyy-MM-dd",
+                 System.Globalization.CultureInfo.InvariantCulture) & !complete?
+                 "#dc3545" : "#f5ff87");
+    }
+}
+
+<div class="row">
+    <div class="col-3 text-center" style="background-color: #dbdbdb5c;padding:50px">
+
+        <img src="data:image/*;base64,@Convert.ToBase64String(Model.Image)" class="mt-0" alt="Avatar">
+        
+        <div class="mt-2">
+            <h2>@Model.UserName</h2>
+        </div>
+            
+
+
+    </div>
+    <div class="col-auto"style="height:auto;width:2px;" >
+
+    </div>
+    <div class="col-8" style="background-color: #dbdbdb5c;">
+        <div class="row">
+            <div class="col">
+                <div>
+                    <h1>Your tasks</h1>
+
+                    <p>
+                        <a asp-action="Create" class="btn btn-outline-primary"><i class="bi bi-plus-circle-fill " style="font-size:20px;"></i></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="background-color:white;">
+            <br />
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="mt-4">
+
+
+                    @if (!Model.items.Any())
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            No Tasks Found!
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div>
+                            @foreach (var item in Model.items)
+                            {
+                                <div class="card mb-2">
+                                    <div class="card-header" style="background-color:@dateStat(item.EndDate,item.ISComplete);">
+                                        
+                                        @item.StartDate => @item.EndDate
+                                    </div>
+                                    <div class="card-body">
+                                        <blockquote class="blockquote m-0">
+                                            <div class="m-0">
+
+                                                <p class="m-0">
+                                                    @item.Content
+                                                </p>
+                                            </div>
+
+
+                                            <div class="m-0 d-flex justify-content-between">
+                                                <p class="card-text mb-0 mt-0">
+                                                    @if (item.ISComplete)
+                                                    {
+                                                        <i class="bi bi-check-circle-fill " style="color:green"></i>
+                                                        <small class="text-muted">Completed</small>
+                                                    }
+                                                    else
+                                                    {
+
+                                                    }
+
+                                                </p>
+                                                <div>
+
+                                                    @if (User.Identity.IsAuthenticated)
+                                                    {
+
+                                                        <a style="text-decoration:none;" asp-action="Edit" asp-controller="List" asp-route-id="@item.Id">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </a>
+                                                        <span class="mr-2 ml-2"></span>
+                                                        <a href="javascript:;" class="js-delete" data-id="@item.Id">
+                                                            <i class="bi bi-trash text-danger"></i>
+                                                        </a>
+                                                    }
+
+                                                </div>
+                                            </div>
+
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+@section Scripts{ 
+
+    <script>
+
+        $(document).ready(function () {
+            $('.js-delete').on('click', function () {
+                var btn = $(this);
+                console.log(btn.data('id'));
+                var result = confirm('Are you sure that you need to delete this task');
+                if (result) {
+                    $.ajax({
+                                url: '/List/Delete/' + btn.data('id'),
+                                success: function () {
+                                    btn.parents('.card').fadeOut();
+                                    toastr.success("Task deleted");
+                                },
+                                error: function () {
+                                    toastr.error('Something went wrong!');
+                                }
+                            });
+                }
+               
+
+            });
+        });
+    </script>
+
+}
+
+
+

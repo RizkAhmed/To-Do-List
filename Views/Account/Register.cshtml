@@ -1,0 +1,82 @@
+﻿@model ToDoListProject.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+<h4>RegisterViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" asp-for="Image" accept="image/x-png, image/jpeg, image/jpg" />
+                    <label class="custom-file-label" asp-for="Image"></label>
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary mt-4">
+                    <i class="bi bi-save"></i>
+                    Register
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4 ">
+        <div id="cover-container" class="d-none")>
+            <img src="" alt="Book Cover" class="img-thumbnail rep-cover" />
+        </div>
+    </div>
+</div>
+
+<div>
+    <a  asp-controller="List" asp-action="Index" >Back to List</a>
+</div>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");}
+    <script>
+        $(document).ready(function () {
+            $('#Image').on('change', function () {
+                var selectedFile = $(this).val().split('\\').pop();
+                $(this).siblings('label').text(selectedFile);
+
+                var coverContainer = $('#cover-container');
+                var image = window.URL.createObjectURL(this.files[0]);
+
+                coverContainer.removeClass('d-none');
+                coverContainer.find('img').attr('src', image);
+
+            });
+           
+        });
+    </script>
+
+}
